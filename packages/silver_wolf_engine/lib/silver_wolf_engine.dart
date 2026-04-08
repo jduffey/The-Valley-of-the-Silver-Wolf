@@ -1,5 +1,7 @@
 library;
 
+export 'src/commands/game_command.dart';
+export 'src/commands/game_command_factory.dart';
 export 'src/constants/game_constants.dart';
 export 'src/data/combat_deck_library.dart';
 export 'src/data/fighter_style_copy.dart';
@@ -24,5 +26,14 @@ export 'src/models/player.dart';
 export 'src/models/school.dart';
 export 'src/models/technique_counts.dart';
 export 'src/models/undo_snapshot.dart';
+export 'src/random/randomizer.dart';
+export 'src/random/seeded_randomizer.dart';
+export 'src/reducers/game_reducer.dart';
+export 'src/results/command_result.dart';
+export 'src/results/state_transition.dart';
+export 'src/rules/player_rules.dart';
+export 'src/rules/school_rules.dart';
+export 'src/rules/silver_wolf_rules.dart';
+export 'src/rules/turn_rules.dart';
 
 const String workspaceReadyMessage = 'Silver Wolf engine ready';
