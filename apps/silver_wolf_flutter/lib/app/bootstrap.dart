@@ -3,5 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:silver_wolf_flutter/app/app.dart';
 
 void bootstrap() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const ProviderScope(child: SilverWolfApp()));
 }
