@@ -17,6 +17,18 @@ class GameSessionViewState {
 
   Player get currentPlayer => gameState.currentPlayer;
 
+  Location get currentLocation => trackDetails[currentPlayer.position];
+
+  School? get currentSchool {
+    final int schoolIndex = gameState.schools.indexWhere(
+      (School school) => school.id == currentLocation.id,
+    );
+    if (schoolIndex == -1) {
+      return null;
+    }
+    return gameState.schools[schoolIndex];
+  }
+
   Player get selectedProfilePlayer {
     final String resolvedId = selectedProfilePlayerId ?? currentPlayer.id;
     final int playerIndex = gameState.players.indexWhere(
@@ -36,6 +48,58 @@ class GameSessionViewState {
     );
     return players;
   }
+
+  List<Player> get playersInTurnOrder {
+    final List<Player> players = <Player>[];
+
+    for (int offset = 0; offset < gameState.players.length; offset += 1) {
+      final int index =
+          (gameState.currentPlayerIndex + offset) % gameState.players.length;
+      players.add(gameState.players[index]);
+    }
+
+    return players;
+  }
+
+  List<Player> get currentPlayerRivals {
+    return getRivalsAtPosition(gameState.players, gameState.currentPlayerIndex);
+  }
+
+  bool get isTurnLocked {
+    return gameState.challengeState != null ||
+        gameState.combatState != null ||
+        gameState.winnerId != null ||
+        gameState.gameOverReason != null;
+  }
+
+  bool get canTravel =>
+      !isTurnLocked && currentPlayer.alive && gameState.actionsRemaining > 0;
+
+  bool get canPassTurn => !isTurnLocked && currentPlayer.alive;
+
+  bool get canHealCurrentPlayer =>
+      canTravel &&
+      currentPlayer.injured &&
+      currentLocation.type == LocationType.town;
+
+  bool get canSaveCurrentSchool =>
+      canTravel &&
+      currentSchool != null &&
+      currentSchool!.status == SchoolStatus.sieged &&
+      !currentSchool!.isCompletingSave;
+
+  bool get canChallengeRival => canTravel && currentPlayerRivals.isNotEmpty;
+
+  bool get canChallengeSilverWolfNow =>
+      canTravel &&
+      gameState.pendingRoll == null &&
+      canChallengeSilverWolf(currentPlayer);
+
+  bool get canUndo =>
+      !isTurnLocked &&
+      currentPlayer.alive &&
+      gameState.undoSnapshot != null &&
+      gameState.undoSnapshot!.playerId == currentPlayer.id;
 
   GameSessionViewState copyWith({
     GameState? gameState,
