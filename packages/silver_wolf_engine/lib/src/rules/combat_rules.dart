@@ -180,6 +180,12 @@ List<CombatModeOption> getAvailableModes(CombatCard card) {
 
   return <CombatModeOption>[
     (
+      id: CombatMode.normal,
+      label: 'Normal',
+      copy: 'Play the card without spending form points.',
+      cost: 0,
+    ),
+    (
       id: CombatMode.keyword,
       label: 'School Special',
       copy: "Use this fighter's keyword.",

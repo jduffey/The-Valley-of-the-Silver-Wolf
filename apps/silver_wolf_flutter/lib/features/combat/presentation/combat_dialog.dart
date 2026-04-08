@@ -122,6 +122,21 @@ class CombatDialog extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 16),
+                      if (combatState.phase ==
+                          CombatPhase.selection) ...<Widget>[
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            'Choose a card and a mode for both fighters to unlock the next phase.',
+                            key: const ValueKey<String>(
+                              'combat-selection-hint',
+                            ),
+                            style: Theme.of(context).textTheme.bodyMedium
+                                ?.copyWith(color: const Color(0xFF6D6457)),
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                      ],
                       Align(
                         alignment: Alignment.centerRight,
                         child: FilledButton(

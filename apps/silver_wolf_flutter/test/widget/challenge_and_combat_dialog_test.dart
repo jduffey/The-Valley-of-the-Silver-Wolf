@@ -91,6 +91,16 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Combat Encounter'), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey<String>('combat-selection-hint')),
+      findsOneWidget,
+    );
+    expect(
+      find.text(
+        'Choose a card and a mode for both fighters to unlock the next phase.',
+      ),
+      findsOneWidget,
+    );
     final FilledButton nextPhaseBefore = tester.widget<FilledButton>(
       find.widgetWithText(FilledButton, 'Next Phase'),
     );
@@ -150,6 +160,10 @@ void main() {
           .combatState!
           .phase,
       CombatPhase.reveal,
+    );
+    expect(
+      find.byKey(const ValueKey<String>('combat-selection-hint')),
+      findsNothing,
     );
   });
 

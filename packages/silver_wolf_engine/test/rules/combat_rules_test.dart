@@ -37,32 +37,36 @@ CombatantState buildCombatant({
 
 void main() {
   group('combat rules', () {
-    test(
-      'available modes match the prototype for normal and special cards',
-      () {
-        final CombatCard normalCard = baseCombatDeckCards.first;
-        final CombatCard specialCard = combatDeckLibrary['Pouch']!.last;
+    test('available modes keep base cards playable even at zero form points', () {
+      final CombatCard normalCard = baseCombatDeckCards.first;
+      final CombatCard specialCard = combatDeckLibrary['Pouch']!.last;
 
-        expect(
-          getAvailableModes(normalCard).map((CombatModeOption mode) => mode.id),
-          <CombatMode>[
-            CombatMode.keyword,
-            CombatMode.swapAttack,
-            CombatMode.swapDefense,
-          ],
-        );
-        expect(
-          getAvailableModes(
-            specialCard,
-          ).map((CombatModeOption mode) => mode.id),
-          <CombatMode>[
-            CombatMode.normal,
-            CombatMode.swapAttack,
-            CombatMode.swapDefense,
-          ],
-        );
-      },
-    );
+      expect(
+        getAvailableModes(normalCard).map((CombatModeOption mode) => mode.id),
+        <CombatMode>[
+          CombatMode.normal,
+          CombatMode.keyword,
+          CombatMode.swapAttack,
+          CombatMode.swapDefense,
+        ],
+        reason:
+            'Base combat cards need a zero-cost normal mode or combat can deadlock when a fighter reaches 0 form points.',
+      );
+      expect(
+        getAvailableModes(specialCard).map((CombatModeOption mode) => mode.id),
+        <CombatMode>[
+          CombatMode.normal,
+          CombatMode.swapAttack,
+          CombatMode.swapDefense,
+        ],
+      );
+      expect(
+        getAvailableModes(normalCard)
+            .firstWhere((CombatModeOption mode) => mode.id == CombatMode.normal)
+            .cost,
+        0,
+      );
+    });
 
     test('mode cost follows the current combat prototype', () {
       final CombatCard normalCard = baseCombatDeckCards.first;
