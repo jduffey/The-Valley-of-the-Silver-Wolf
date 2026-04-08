@@ -153,8 +153,13 @@ class CombatReducer {
     final List<GameLogEntry> logEntries = challenger != null && target != null
         ? <GameLogEntry>[
             GameLogEntry(
+              type: 'challenge_declined',
               message:
                   "${getPlayerDisplayName(target)} declines ${getPlayerDisplayName(challenger)}'s challenge and loses 1 Reputation.",
+              metadata: <String, Object?>{
+                'challengerId': challengeState.challengerId,
+                'targetId': challengeState.targetId,
+              },
             ),
           ]
         : const <GameLogEntry>[];
@@ -577,8 +582,13 @@ class CombatReducer {
 
     final List<GameLogEntry> logEntries = <GameLogEntry>[
       GameLogEntry(
+        type: 'combat_victory',
         message:
             '$winnerName defeats $loserName in combat. $winnerName gains 1 Reputation and a temporary extra action next turn. $loserName becomes Injured and loses 1 Reputation.',
+        metadata: <String, Object?>{
+          'winnerId': winnerCombatant.id,
+          'loserId': loserCombatant.id,
+        },
       ),
     ];
 

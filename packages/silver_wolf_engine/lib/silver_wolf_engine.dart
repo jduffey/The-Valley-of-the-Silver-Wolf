@@ -38,5 +38,8 @@ export 'src/rules/player_rules.dart';
 export 'src/rules/school_rules.dart';
 export 'src/rules/silver_wolf_rules.dart';
 export 'src/rules/turn_rules.dart';
+export 'src/serialization/game_command_codec.dart';
+export 'src/serialization/game_state_codec.dart';
+export 'src/serialization/state_transition_codec.dart';
 
 const String workspaceReadyMessage = 'Silver Wolf engine ready';

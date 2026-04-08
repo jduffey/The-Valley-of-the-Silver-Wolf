@@ -85,8 +85,13 @@ class TurnReducer {
       randomizer: randomizer,
       logEntries: <GameLogEntry>[
         GameLogEntry(
+          type: 'heal',
           message:
               '${getPlayerDisplayName(currentPlayer)} heals at ${trackDetails[currentPlayer.position].name}.',
+          metadata: <String, Object?>{
+            'playerId': currentPlayer.id,
+            'locationId': trackDetails[currentPlayer.position].id,
+          },
         ),
       ],
     );
@@ -146,8 +151,13 @@ class TurnReducer {
 
       final List<GameLogEntry> logEntries = <GameLogEntry>[
         GameLogEntry(
+          type: 'school_saved',
           message:
               '${formatNameList(defenderNames)} saved ${getSchoolEventLabel(updatedSchools[schoolIndex])}!',
+          metadata: <String, Object?>{
+            'schoolId': updatedSchools[schoolIndex].id,
+            'defenderIds': List<String>.from(defenders),
+          },
         ),
       ];
 
@@ -171,9 +181,15 @@ class TurnReducer {
       randomizer: randomizer,
       logEntries: <GameLogEntry>[
         GameLogEntry(
+          type: 'school_defended',
           message:
               '${getPlayerDisplayName(currentPlayer)} defends ${getSchoolEventLabel(updatedSchools[schoolIndex])}. '
               'Progress is now $nextProgress/3.',
+          metadata: <String, Object?>{
+            'playerId': currentPlayer.id,
+            'schoolId': updatedSchools[schoolIndex].id,
+            'progress': nextProgress,
+          },
         ),
       ],
     );
@@ -198,17 +214,25 @@ class TurnReducer {
     final int challengerStrength = buildCombatScore(challenger, randomizer);
     final List<GameLogEntry> logEntries = <GameLogEntry>[
       GameLogEntry(
+        type: 'silver_wolf_challenge_started',
         message:
             '${getPlayerDisplayName(challenger)} challenges the Silver Wolf with Power ${challenger.power}, '
             'Stamina ${challenger.stamina}, Agility ${challenger.agility}, Chi ${challenger.chi}, and Wit ${challenger.wit}.',
+        metadata: <String, Object?>{'playerId': challenger.id},
       ),
     ];
 
     if (challengerStrength > wolfStrength) {
       logEntries.add(
         GameLogEntry(
+          type: 'silver_wolf_challenge_won',
           message:
               '${getPlayerDisplayName(challenger)} defeats the Silver Wolf in combat and wins Valley of the Silver Wolf.',
+          metadata: <String, Object?>{
+            'playerId': challenger.id,
+            'challengerStrength': challengerStrength,
+            'wolfStrength': wolfStrength,
+          },
         ),
       );
 
@@ -236,8 +260,14 @@ class TurnReducer {
     );
     logEntries.add(
       GameLogEntry(
+        type: 'silver_wolf_challenge_lost',
         message:
             'The Silver Wolf kills ${getPlayerDisplayName(challenger)}. His kung fu was too strong.',
+        metadata: <String, Object?>{
+          'playerId': challenger.id,
+          'challengerStrength': challengerStrength,
+          'wolfStrength': wolfStrength,
+        },
       ),
     );
 
@@ -448,8 +478,13 @@ class TurnReducer {
         )!;
         turnLogs.add(
           GameLogEntry(
+            type: 'school_destroy_injury',
             message:
                 '${getPlayerDisplayName(player)} is caught in the fall of ${getSchoolEventLabel(destroyedSchool)} and becomes Injured.',
+            metadata: <String, Object?>{
+              'playerId': player.id,
+              'schoolId': destroyedSchool.id,
+            },
           ),
         );
       }

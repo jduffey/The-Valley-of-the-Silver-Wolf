@@ -99,8 +99,13 @@ SilverWolfAdvanceResult advanceSilverWolf(
       );
       logEntries.add(
         GameLogEntry(
+          type: 'silver_wolf_school_destroyed',
           message:
               'The Silver Wolf has destroyed ${getSchoolEventLabel(updatedSchools[index])}.',
+          metadata: <String, Object?>{
+            'schoolId': updatedSchools[index].id,
+            'whiteDieResult': whiteDieResult,
+          },
         ),
       );
     }
@@ -136,8 +141,13 @@ SilverWolfAdvanceResult advanceSilverWolf(
     );
     logEntries.add(
       GameLogEntry(
+        type: 'silver_wolf_school_sieged',
         message:
             'The Silver Wolf has laid siege to ${getSchoolEventLabel(updatedSchools[index])}.',
+        metadata: <String, Object?>{
+          'schoolId': updatedSchools[index].id,
+          'whiteDieResult': whiteDieResult,
+        },
       ),
     );
   }
