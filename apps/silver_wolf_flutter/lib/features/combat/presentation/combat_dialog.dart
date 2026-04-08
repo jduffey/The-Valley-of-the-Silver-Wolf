@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:silver_wolf_engine/silver_wolf_engine.dart';
+import 'package:silver_wolf_flutter/core/widgets/textured_modal_surface.dart';
 import 'package:silver_wolf_flutter/features/combat/presentation/combat_card_widget.dart';
 import 'package:silver_wolf_flutter/features/combat/presentation/combat_phase_strip.dart';
 import 'package:silver_wolf_flutter/features/combat/presentation/combatant_summary_card.dart';
@@ -36,10 +37,8 @@ class CombatDialog extends StatelessWidget {
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 1180, maxHeight: 900),
               child: Material(
-                color: const Color(0xFFF8F2E9),
-                borderRadius: BorderRadius.circular(28),
-                clipBehavior: Clip.antiAlias,
-                child: Padding(
+                color: Colors.transparent,
+                child: TexturedModalSurface(
                   padding: const EdgeInsets.all(20),
                   child: Column(
                     children: <Widget>[

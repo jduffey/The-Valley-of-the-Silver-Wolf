@@ -24,4 +24,4 @@ melos:
       run: melos exec --fail-fast -- "dart format ."
     test:
       description: Run package tests across the workspace.
-      run: melos exec --fail-fast -- "if grep -q '^flutter:' pubspec.yaml; then flutter test; else dart test; fi"
+      run: melos exec --fail-fast -- "if grep -q '^flutter:' pubspec.yaml; then flutter test; if [ -d integration_test ]; then flutter test integration_test -d macos; fi; else dart test; fi"

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:silver_wolf_engine/silver_wolf_engine.dart';
+import 'package:silver_wolf_flutter/core/extensions/hex_color.dart';
+import 'package:silver_wolf_flutter/core/services/asset_catalog.dart';
 import 'package:silver_wolf_flutter/core/widgets/app_panel.dart';
 import 'package:silver_wolf_flutter/core/widgets/resource_pips.dart';
+import 'package:silver_wolf_flutter/core/widgets/sigil_medallion.dart';
 import 'package:silver_wolf_flutter/features/game_session/application/game_session_view_state.dart';
 
 class FighterProfilePanel extends StatelessWidget {
@@ -15,6 +18,7 @@ class FighterProfilePanel extends StatelessWidget {
     final FighterStyleCopy? style = fighterStyleCopy[player.name];
     final TownDescriptionCopy? description =
         townDescriptions['#${player.name}'];
+    final String? sigilAsset = AssetCatalog.sigilForTownName(player.name);
 
     return AppPanel(
       title: 'Fighter Profile',
@@ -22,13 +26,36 @@ class FighterProfilePanel extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text(
-            description?.description ?? player.name,
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
-          const SizedBox(height: 8),
-          Text(
-            '${style?.style ?? 'Valley Style'} • Keyword: ${style?.keyword ?? 'Keyword'}',
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              SigilMedallion(
+                assetPath: sigilAsset,
+                accent: player.color.toColor(),
+                size: 78,
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                      player.name,
+                      style: Theme.of(context).textTheme.headlineSmall,
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      description?.description ?? player.name,
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      '${style?.style ?? 'Valley Style'} • Keyword: ${style?.keyword ?? 'Keyword'}',
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 16),
           Wrap(

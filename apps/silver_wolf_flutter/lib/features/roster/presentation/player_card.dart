@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:silver_wolf_engine/silver_wolf_engine.dart';
+import 'package:silver_wolf_flutter/core/extensions/hex_color.dart';
+import 'package:silver_wolf_flutter/core/services/asset_catalog.dart';
 import 'package:silver_wolf_flutter/core/widgets/resource_pips.dart';
+import 'package:silver_wolf_flutter/core/widgets/sigil_medallion.dart';
 
 class PlayerCard extends StatelessWidget {
   const PlayerCard({
@@ -47,6 +50,8 @@ class PlayerCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
+    final String? sigilAsset = AssetCatalog.sigilForTownName(player.name);
+    final FighterStyleCopy? styleCopy = fighterStyleCopy[player.name];
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 250),
@@ -70,11 +75,34 @@ class PlayerCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
+                  SigilMedallion(
+                    assetPath: sigilAsset,
+                    accent: player.color.toColor(),
+                    size: 56,
+                  ),
+                  const SizedBox(width: 12),
                   Expanded(
-                    child: Text(
-                      '${player.id.toUpperCase()} • ${player.name}',
-                      style: theme.textTheme.titleMedium,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                          player.id.toUpperCase(),
+                          style: theme.textTheme.labelLarge?.copyWith(
+                            color: const Color(0xFF6D6457),
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(player.name, style: theme.textTheme.titleMedium),
+                        if (styleCopy != null)
+                          Text(
+                            '${styleCopy.style} • ${styleCopy.keyword}',
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: const Color(0xFF6D6457),
+                            ),
+                          ),
+                      ],
                     ),
                   ),
                   AnimatedSwitcher(

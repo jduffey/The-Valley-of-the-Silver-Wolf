@@ -5,45 +5,8 @@ import 'package:silver_wolf_engine/silver_wolf_engine.dart';
 import 'package:silver_wolf_flutter/app/app.dart';
 import 'package:silver_wolf_flutter/app/providers.dart';
 import 'package:silver_wolf_flutter/core/services/app_randomizer.dart';
-import 'package:silver_wolf_flutter/features/game_session/application/game_session_controller.dart';
-import 'package:silver_wolf_flutter/features/game_session/application/game_session_view_state.dart';
 import 'package:silver_wolf_flutter/features/game_session/presentation/game_shell_page.dart';
-
-class FixedRandomizer implements Randomizer {
-  FixedRandomizer(this.values);
-
-  final List<int> values;
-  int _index = 0;
-
-  @override
-  int nextInt(int max) {
-    final int value = values[_index];
-    _index += 1;
-    return value.clamp(0, max - 1);
-  }
-}
-
-class PreparedGameSessionController extends GameSessionController {
-  PreparedGameSessionController(this._initialViewState);
-
-  final GameSessionViewState _initialViewState;
-
-  @override
-  GameSessionViewState build() => _initialViewState;
-}
-
-GameSessionViewState buildViewState(GameState gameState) {
-  return GameSessionViewState(
-    gameState: gameState,
-    selectedProfilePlayerId: gameState.currentPlayer.id,
-    openDialog: gameState.combatState != null
-        ? GameSessionDialog.combat
-        : gameState.challengeState != null
-        ? GameSessionDialog.challenge
-        : null,
-    isAnimatingSaveCompletion: false,
-  );
-}
+import '../support/game_session_test_support.dart';
 
 void main() {
   setUp(() {});
@@ -57,13 +20,7 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
 
-    final GameState challengeState = InitialStateFactory.create().copyWith(
-      challengeState: const ChallengeState(
-        challengerId: 'p1',
-        opponentIds: <String>['p2', 'p3'],
-        targetId: null,
-      ),
-    );
+    final GameState challengeState = createChallengeDialogGameState();
 
     await tester.pumpWidget(
       ProviderScope(
@@ -114,19 +71,12 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
 
-    final CombatState combatState = CombatStateFactory.create(
-      InitialStateFactory.create().players,
-      'p1',
-      'p2',
-      FixedRandomizer(List<int>.filled(18, 0)),
-    )!;
-    final GameState gameState = InitialStateFactory.create().copyWith(
-      combatState: combatState,
-    );
-    final CombatCard attackerCard = combatState.combatants['p1']!.hand.first;
-    final CombatCard defenderCard = combatState.combatants['p2']!.hand.first;
-    final CombatMode attackerMode = getAvailableModes(attackerCard).first.id;
-    final CombatMode defenderMode = getAvailableModes(defenderCard).first.id;
+    final CombatFixture fixture = createLethalCombatFixture();
+    final GameState gameState = fixture.gameState;
+    final CombatCard attackerCard = fixture.choice.attackerCard;
+    final CombatCard defenderCard = fixture.choice.defenderCard;
+    final CombatMode attackerMode = fixture.choice.attackerMode;
+    final CombatMode defenderMode = fixture.choice.defenderMode;
 
     await tester.pumpWidget(
       ProviderScope(
@@ -212,12 +162,8 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
 
-    final CombatState baseCombatState = CombatStateFactory.create(
-      InitialStateFactory.create().players,
-      'p1',
-      'p2',
-      FixedRandomizer(List<int>.filled(18, 0)),
-    )!;
+    final CombatState baseCombatState =
+        createLethalCombatFixture().gameState.combatState!;
     final CombatantState attacker = baseCombatState.combatants['p1']!;
     final CombatCard selectedCard = attacker.hand.first;
     final CombatState combatState = baseCombatState.copyWith(
