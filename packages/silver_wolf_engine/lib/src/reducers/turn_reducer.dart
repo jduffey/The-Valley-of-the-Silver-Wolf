@@ -52,11 +52,11 @@ class TurnReducer {
   }
 
   static CommandResult passTurn(GameState state, Randomizer randomizer) {
-    if (!state.currentPlayer.alive) {
+    if (_isTurnLocked(state) || !state.currentPlayer.alive) {
       return CommandResult.unchanged(state);
     }
 
-    return _resolveTurnEnd(
+    return resolveTurnEnd(
       state.copyWith(pendingRoll: null, undoSnapshot: null),
       randomizer,
     );
@@ -296,7 +296,16 @@ class TurnReducer {
   }
 
   static bool _canSpendAction(GameState state) {
-    return state.currentPlayer.alive && state.actionsRemaining > 0;
+    return !_isTurnLocked(state) &&
+        state.currentPlayer.alive &&
+        state.actionsRemaining > 0;
+  }
+
+  static bool _isTurnLocked(GameState state) {
+    return state.winnerId != null ||
+        state.gameOverReason != null ||
+        state.challengeState != null ||
+        state.combatState != null;
   }
 
   static UndoSnapshot _createUndoSnapshot(GameState state) {
@@ -352,7 +361,7 @@ class TurnReducer {
       );
     }
 
-    final CommandResult turnEndResult = _resolveTurnEnd(baseState, randomizer);
+    final CommandResult turnEndResult = resolveTurnEnd(baseState, randomizer);
     return CommandResult(
       state: turnEndResult.state,
       transition: StateTransition(
@@ -365,7 +374,7 @@ class TurnReducer {
     );
   }
 
-  static CommandResult _resolveTurnEnd(GameState state, Randomizer randomizer) {
+  static CommandResult resolveTurnEnd(GameState state, Randomizer randomizer) {
     List<Player> updatedPlayers = clonePlayers(state.players);
     List<School> updatedSchools = cloneSchools(state.schools);
     final List<GameLogEntry> turnLogs = <GameLogEntry>[];

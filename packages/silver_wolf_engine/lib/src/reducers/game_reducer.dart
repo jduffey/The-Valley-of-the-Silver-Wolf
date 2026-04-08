@@ -2,6 +2,7 @@ import 'package:silver_wolf_engine/src/commands/game_command.dart';
 import 'package:silver_wolf_engine/src/constants/game_constants.dart';
 import 'package:silver_wolf_engine/src/models/game_state.dart';
 import 'package:silver_wolf_engine/src/random/randomizer.dart';
+import 'package:silver_wolf_engine/src/reducers/combat_reducer.dart';
 import 'package:silver_wolf_engine/src/reducers/turn_reducer.dart';
 import 'package:silver_wolf_engine/src/results/command_result.dart';
 
@@ -14,6 +15,17 @@ class GameReducer {
     Randomizer randomizer,
   ) {
     return switch (command) {
+      OpenChallengeCommand() => CombatReducer.openChallenge(state),
+      ChooseChallengeTargetCommand(:final targetId) =>
+        CombatReducer.chooseChallengeTarget(state, targetId),
+      AcceptChallengeCommand() => CombatReducer.acceptChallenge(
+        state,
+        randomizer,
+      ),
+      DeclineChallengeCommand() => CombatReducer.declineChallenge(
+        state,
+        randomizer,
+      ),
       TravelClockwiseCommand() => TurnReducer.travel(
         state,
         clockwiseDirection,
@@ -40,6 +52,16 @@ class GameReducer {
       UndoLastActionCommand() => TurnReducer.undoLastAction(state),
       ClearCompletedSchoolRescueCommand(:final schoolId) =>
         TurnReducer.clearCompletedSchoolRescue(state, schoolId),
+      SelectCombatCardCommand(:final fighterId, :final cardId) =>
+        CombatReducer.selectCombatCard(state, fighterId, cardId),
+      SelectCombatModeCommand(:final fighterId, :final mode) =>
+        CombatReducer.selectCombatMode(state, fighterId, mode),
+      TriggerCombatStumbleCommand(:final fighterId) =>
+        CombatReducer.triggerCombatStumble(state, fighterId, randomizer),
+      AdvanceCombatPhaseCommand() => CombatReducer.advanceCombatPhase(
+        state,
+        randomizer,
+      ),
     };
   }
 }
