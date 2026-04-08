@@ -5,6 +5,8 @@ import 'package:silver_wolf_flutter/app/providers.dart';
 import 'package:silver_wolf_flutter/core/widgets/app_panel.dart';
 import 'package:silver_wolf_flutter/core/widgets/section_header.dart';
 import 'package:silver_wolf_flutter/features/board/presentation/board_panel.dart';
+import 'package:silver_wolf_flutter/features/challenge/presentation/challenge_dialog.dart';
+import 'package:silver_wolf_flutter/features/combat/presentation/combat_dialog.dart';
 import 'package:silver_wolf_flutter/features/event_log/presentation/event_log_panel.dart';
 import 'package:silver_wolf_flutter/features/game_session/application/game_session_controller.dart';
 import 'package:silver_wolf_flutter/features/game_session/application/game_session_view_state.dart';
@@ -43,67 +45,104 @@ class GameShellPage extends ConsumerWidget {
           ),
         ),
         child: SafeArea(
-          child: LayoutBuilder(
-            builder: (BuildContext context, BoxConstraints constraints) {
-              final Widget statusPanel = _StatusPanel(viewState: viewState);
-              final Widget boardPanel = BoardPanel(
-                viewState: viewState,
-                onChallengeSilverWolf: () =>
-                    controller.dispatch(GameCommandFactory.challengeSilverWolf),
-                onSelectPlayer: controller.selectProfilePlayer,
-              );
-              final Widget rosterPanel = RosterSidebar(
-                viewState: viewState,
-                controller: controller,
-              );
-              final Widget profilePanel = FighterProfilePanel(
-                viewState: viewState,
-              );
-              final Widget eventLogPanel = EventLogPanel(
-                eventLog: viewState.gameState.eventLog,
-              );
+          child: Stack(
+            children: <Widget>[
+              LayoutBuilder(
+                builder: (BuildContext context, BoxConstraints constraints) {
+                  final Widget statusPanel = _StatusPanel(viewState: viewState);
+                  final Widget boardPanel = BoardPanel(
+                    viewState: viewState,
+                    onChallengeSilverWolf: () => controller.dispatch(
+                      GameCommandFactory.challengeSilverWolf,
+                    ),
+                    onSelectPlayer: controller.selectProfilePlayer,
+                  );
+                  final Widget rosterPanel = RosterSidebar(
+                    viewState: viewState,
+                    controller: controller,
+                  );
+                  final Widget profilePanel = FighterProfilePanel(
+                    viewState: viewState,
+                  );
+                  final Widget eventLogPanel = EventLogPanel(
+                    eventLog: viewState.gameState.eventLog,
+                  );
 
-              return ListView(
-                padding: const EdgeInsets.all(20),
-                children: <Widget>[
-                  const SectionHeader(
-                    title: 'Game Shell',
-                    subtitle:
-                        'The main non-combat Flutter interface now mirrors the prototype layout with engine-backed widgets.',
+                  return ListView(
+                    padding: const EdgeInsets.all(20),
+                    children: <Widget>[
+                      const SectionHeader(
+                        title: 'Game Shell',
+                        subtitle:
+                            'The main non-combat Flutter interface now mirrors the prototype layout with engine-backed widgets.',
+                      ),
+                      const SizedBox(height: 18),
+                      statusPanel,
+                      const SizedBox(height: 18),
+                      if (isCompact) ...<Widget>[
+                        boardPanel,
+                        const SizedBox(height: 16),
+                        rosterPanel,
+                        const SizedBox(height: 16),
+                        profilePanel,
+                        const SizedBox(height: 16),
+                        eventLogPanel,
+                      ] else ...<Widget>[
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Expanded(flex: 3, child: boardPanel),
+                            const SizedBox(width: 16),
+                            Expanded(flex: 2, child: rosterPanel),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Expanded(flex: 2, child: profilePanel),
+                            const SizedBox(width: 16),
+                            Expanded(flex: 3, child: eventLogPanel),
+                          ],
+                        ),
+                      ],
+                    ],
+                  );
+                },
+              ),
+              if (viewState.gameState.challengeState
+                  case final ChallengeState challengeState)
+                ChallengeDialog(
+                  challengeState: challengeState,
+                  players: viewState.gameState.players,
+                  onChooseTarget: (String targetId) => controller.dispatch(
+                    GameCommandFactory.chooseChallengeTarget(targetId),
                   ),
-                  const SizedBox(height: 18),
-                  statusPanel,
-                  const SizedBox(height: 18),
-                  if (isCompact) ...<Widget>[
-                    boardPanel,
-                    const SizedBox(height: 16),
-                    rosterPanel,
-                    const SizedBox(height: 16),
-                    profilePanel,
-                    const SizedBox(height: 16),
-                    eventLogPanel,
-                  ] else ...<Widget>[
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Expanded(flex: 3, child: boardPanel),
-                        const SizedBox(width: 16),
-                        Expanded(flex: 2, child: rosterPanel),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Expanded(flex: 2, child: profilePanel),
-                        const SizedBox(width: 16),
-                        Expanded(flex: 3, child: eventLogPanel),
-                      ],
-                    ),
-                  ],
-                ],
-              );
-            },
+                  onAccept: () =>
+                      controller.dispatch(GameCommandFactory.acceptChallenge),
+                  onDecline: () =>
+                      controller.dispatch(GameCommandFactory.declineChallenge),
+                ),
+              if (viewState.gameState.combatState
+                  case final CombatState combatState)
+                CombatDialog(
+                  combatState: combatState,
+                  onChooseCard: (String fighterId, String cardId) =>
+                      controller.dispatch(
+                        GameCommandFactory.selectCombatCard(fighterId, cardId),
+                      ),
+                  onChooseMode: (String fighterId, CombatMode mode) =>
+                      controller.dispatch(
+                        GameCommandFactory.selectCombatMode(fighterId, mode),
+                      ),
+                  onAdvancePhase: () => controller.dispatch(
+                    GameCommandFactory.advanceCombatPhase,
+                  ),
+                  onTriggerStumble: (String fighterId) => controller.dispatch(
+                    GameCommandFactory.triggerCombatStumble(fighterId),
+                  ),
+                ),
+            ],
           ),
         ),
       ),
