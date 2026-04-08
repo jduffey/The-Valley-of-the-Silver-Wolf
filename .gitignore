@@ -1,2 +1,7 @@
 Images/
-.DS_store
+.DS_Store
+.dart_tool/
+.melos_tool/
+build/
+.idea/
+*.iml

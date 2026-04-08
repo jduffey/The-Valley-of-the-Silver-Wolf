@@ -1,0 +1,27 @@
+name: silver_wolf_workspace
+publish_to: none
+
+environment:
+  sdk: ^3.11.4
+
+dev_dependencies:
+  melos: ^7.5.1
+
+workspace:
+  - apps/silver_wolf_flutter
+  - packages/silver_wolf_engine
+
+melos:
+  packages:
+    - apps/silver_wolf_flutter
+    - packages/silver_wolf_engine
+  scripts:
+    analyze:
+      description: Run static analysis for every package in the workspace.
+      run: melos exec --fail-fast -- "dart analyze ."
+    format:
+      description: Format all Dart files in the workspace.
+      run: melos exec --fail-fast -- "dart format ."
+    test:
+      description: Run package tests across the workspace.
+      run: melos exec --fail-fast -- "if grep -q '^flutter:' pubspec.yaml; then flutter test; else dart test; fi"

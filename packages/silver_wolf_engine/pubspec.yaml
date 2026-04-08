@@ -1,0 +1,14 @@
+name: silver_wolf_engine
+description: Pure Dart game engine for the Valley of the Silver Wolf migration workspace.
+version: 0.1.0
+resolution: workspace
+
+environment:
+  sdk: ^3.11.4
+
+dependencies:
+  collection: ^1.19.1
+
+dev_dependencies:
+  lints: ^6.0.0
+  test: ^1.25.6
